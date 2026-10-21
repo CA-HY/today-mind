@@ -122,7 +122,6 @@ label{
 <textarea id="memo"
 placeholder="今日は何を意識して行動するかを書いてみましょう"></textarea>
 
-<button onclick="saveMemo()">保存</button>
 
 </div>
 
@@ -293,11 +292,6 @@ document.getElementById("action").innerText=item.action;
 
 }
 
-function saveMemo(){
-localStorage.setItem("mindMemo",
-document.getElementById("memo").value);
-alert("保存しました");
-}
 
 window.onload=function(){
 showRandom();
