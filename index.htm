@@ -1,106 +1,172 @@
 ﻿<!DOCTYPE html>
 <html lang="ja">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>今日のマインド</title>
 
 <style>
 
 body{
-    font-family: "Yu Gothic","Meiryo",sans-serif;
-    background:#f4f6f9;
     margin:0;
-    padding:30px;
+    font-family:"Yu Gothic";
+    background:#f5f7fa;
 }
 
 .container{
-    max-width:900px;
-    margin:auto;
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+
+    width:320px;
+    background:white;
+    border-right:1px solid #ddd;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.main{
+
+    flex:1;
+    padding:30px;
+}
+
+.search{
+
+    width:100%;
+    padding:10px;
+    font-size:16px;
+    margin-bottom:20px;
+}
+
+.menu-title{
+
+    color:#0078D4;
+    font-weight:bold;
+    margin-top:20px;
+    margin-bottom:8px;
+}
+
+.menu-item{
+
+    padding:8px;
+    cursor:pointer;
+    border-radius:6px;
+}
+
+.menu-item:hover{
+
+    background:#eef6ff;
 }
 
 .card{
+
     background:white;
-    border-radius:15px;
     padding:30px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
 }
 
 .category{
+
     color:#0078D4;
     font-weight:bold;
-    font-size:20px;
 }
 
 .title{
+
     font-size:36px;
-    font-weight:bold;
-    margin:15px 0;
+    margin:10px 0 20px;
 }
 
 .summary{
-    background:#eef6ff;
-    padding:15px;
-    border-left:5px solid #0078D4;
-    margin-bottom:25px;
-    font-size:18px;
-}
 
-h3{
-    color:#333;
+    background:#eef6ff;
+    border-left:5px solid #0078D4;
+    padding:15px;
+    margin-bottom:20px;
+    font-weight:bold;
 }
 
 .section{
-    margin-top:20px;
+    margin-top:6px;
 }
 
-textarea{
-    width:100%;
-    height:100px;
-    padding:10px;
-    font-size:16px;
-    border-radius:8px;
-    border:1px solid #ccc;
+.content{
+    white-space:pre-line;
+    line-height:0.5;
+}
+
+h3{
+
+    color:#0078D4;
 }
 
 button{
+
     background:#0078D4;
     color:white;
     border:none;
-    padding:12px 25px;
-    margin-top:15px;
     border-radius:8px;
+    padding:10px 20px;
     cursor:pointer;
-    font-size:16px;
 }
 
-button:hover{
-    background:#005ea9;
+@media(max-width:768px){
+
+.container{
+
+    flex-direction:column;
 }
 
-.actions{
-    margin-top:25px;
+.sidebar{
+
+    width:auto;
 }
 
-label{
-    display:block;
-    margin-top:10px;
-}
-
-.footer{
-    margin-top:30px;
 }
 
 </style>
 
 </head>
+
 <body>
 
 <div class="container">
 
+<div class="sidebar">
+
+<input
+type="text"
+id="search"
+class="search"
+placeholder="検索">
+
+<div class="menu-title">
+マインド一覧
+</div>
+
+<div id="menu"></div>
+
+<hr>
+
+<div class="menu-title">
+三留辞典
+</div>
+
+<div id="dictionary"></div>
+
+</div>
+
+<div class="main">
+
 <div class="card">
 
-<div id="category" class="category"></div>
+<div id="category"></div>
 
 <div id="title" class="title"></div>
 
@@ -108,200 +174,153 @@ label{
 
 <div class="section">
 <h3>なぜ重要なのか</h3>
-<p id="detail"></p>
+<div id="detail"></div>
 </div>
 
 <div class="section">
-<h3>実務への落とし込み</h3>
-<p id="action"></p>
+<h3>三留メモ</h3>
+<div id="mind"></div>
 </div>
 
 <div class="section">
-<h3>今日の実践宣言</h3>
-
-<textarea id="memo"
-placeholder="今日は何を意識して行動するかを書いてみましょう"></textarea>
-
-
+<h3>今日の実践</h3>
+<div id="action"></div>
 </div>
 
-<div class="actions">
+<br>
 
-<h3>振り返り</h3>
+<button onclick="showRandom()">
+ランダム表示
+</button>
 
-<label>
-<input type="checkbox" id="done">
- 実践できた
-</label>
-
-<label>
-<input type="checkbox" id="learn">
- 新しい学びがあった
-</label>
-
-<label>
-<input type="checkbox" id="continue">
- 明日も継続する
-</label>
-
-</div>
-
-<div class="footer">
-<button onclick="showRandom()">別のマインドを表示</button>
 </div>
 
 </div>
 
 </div>
+
+<script src="mind-data.js"></script>
 
 <script>
 
-const minds = [
-
-{
-category:"成功者マインド",
-title:"素直さ（コーチャブル）",
-summary:"まずは教わったとおりに試してみる。",
-detail:"成果を出している人ほど自己流を挟まず、まず実践する。理解してから動くのではなく、行動しながら学びを深める姿勢が重要。",
-action:"相手のアドバイスを一度そのまま実践してみる。"
-},
-
-{
-category:"成功者マインド",
-title:"大量行動",
-summary:"コンフォートゾーンを抜け、ラーニングゾーンで挑戦を続ける。",
-detail:"成長は居心地の良い環境では起こらない。少し不安を感じる挑戦を繰り返すことで経験と成長が得られる。",
-action:"新しい業務改善や提案を1つ実施する。"
-},
-
-{
-category:"成功者マインド",
-title:"効果的な解釈",
-summary:"事実と解釈を切り分ける。",
-detail:"起こった事実は変えられないが、その意味付けは選ぶことができる。前向きな解釈は次の行動を生み出す。",
-action:"問題が起きた際に『何を学べるか』を考える。"
-},
-
-{
-category:"成功者マインド",
-title:"決定的なコンテキスト",
-summary:"あり方や姿勢が結果を左右する。",
-detail:"知識やテクニックだけでなく、日頃の姿勢や信頼感が成果に大きく影響する。",
-action:"相手に安心感を与える言動を意識する。"
-},
-
-{
-category:"成功者マインド",
-title:"徹底したGIVE",
-summary:"まず相手を理解する。",
-detail:"信頼関係は相手を理解することから始まる。自分の主張より先に相手の課題や想いを理解する。",
-action:"会話で質問を1つ多くしてみる。"
-},
-
-{
-category:"経営者マインド",
-title:"責任感（自分事）",
-summary:"自分事として考える。",
-detail:"担当外であっても、自分なら何ができるかを考える。当事者意識が価値を生む。",
-action:"目の前の課題に対して改善案を考える。"
-},
-
-{
-category:"経営者マインド",
-title:"READY FIRE AIM",
-summary:"まず行動し改善する。",
-detail:"完璧な準備を待つより、小さく始めて改善を繰り返す方が成長も成果も早い。",
-action:"後回しにしているタスクへ着手する。"
-},
-
-{
-category:"経営者マインド",
-title:"第2領域にフォーカスする",
-summary:"重要だが緊急ではないことへ時間を使う。",
-detail:"目先の仕事だけでなく、将来の成長につながる活動へ投資することが重要。",
-action:"業務改善や学習に30分使う。"
-},
-
-{
-category:"財務マインド",
-title:"社長のゴールと想い",
-summary:"ビジョンを理解する。",
-detail:"経営者の目指す未来を理解することが、真の支援につながる。",
-action:"相手の目的や背景を考えながら業務を行う。"
-},
-
-{
-category:"財務マインド",
-title:"現状維持＝衰退",
-summary:"維持にも成長にも投資が必要。",
-detail:"変化しないことが安全とは限らない。継続的な改善と投資が重要。",
-action:"改善できることを1件見つける。"
-},
-
-{
-category:"財務マインド",
-title:"投資・費用",
-summary:"投資と費用を区別する。",
-detail:"支出の中には未来の成果を生む投資がある。短期だけで判断しない。",
-action:"将来効果を考えて意思決定する。"
-},
-
-{
-category:"財務マインド",
-title:"全体最適の思考",
-summary:"組織全体で考える。",
-detail:"部分最適ではなく、全体として何が最善かを意識する。",
-action:"他部署への影響も考慮して判断する。"
-},
-
-{
-category:"財務マインド",
-title:"財務のカラクリ",
-summary:"成長の仕組みを理解する。",
-detail:"複利やレバレッジなど、成長を加速させる考え方を学ぶ。",
-action:"効率化できる仕組みを探す。"
-},
-
-{
-category:"財務マインド",
-title:"BS・PL・CFで判断しない",
-summary:"数字以外も含めて判断する。",
-detail:"数字だけでなく、目的や将来性なども考慮して意思決定する。",
-action:"数字の背景まで考えてみる。"
-},
-
-{
-category:"財務マインド",
-title:"危機管理の法則",
-summary:"最悪を想定し、最高の準備をする。",
-detail:"トラブルは起こる前提で備えることで被害を最小化できる。",
-action:"リスクと対策を1つ洗い出す。"
-}
-
-];
-
-function showRandom(){
-
-const item = minds[Math.floor(Math.random()*minds.length)];
+function showMind(item){
 
 document.getElementById("category").innerText=item.category;
 document.getElementById("title").innerText=item.title;
 document.getElementById("summary").innerText=item.summary;
 document.getElementById("detail").innerText=item.detail;
+document.getElementById("mind").innerText=item.mind;
 document.getElementById("action").innerText=item.action;
 
 }
 
+function showRandom(){
 
-window.onload=function(){
+const item =
+minds[Math.floor(Math.random()*minds.length)];
+
+showMind(item);
+
+}
+
+const menu = document.getElementById("menu");
+
+minds.forEach(item=>{
+
+const div = document.createElement("div");
+
+div.className="menu-item";
+div.innerText=item.title;
+
+div.onclick=()=>showMind(item);
+
+menu.appendChild(div);
+
+});
+
+document
+.getElementById("search")
+.addEventListener("input",e=>{
+
+const keyword =
+e.target.value.toLowerCase();
+
+menu.innerHTML="";
+
+minds
+.filter(m=>
+
+m.title.toLowerCase().includes(keyword)
+||
+m.summary.toLowerCase().includes(keyword)
+||
+m.detail.toLowerCase().includes(keyword)
+
+)
+.forEach(item=>{
+
+const div =
+document.createElement("div");
+
+div.className="menu-item";
+
+div.innerText=item.title;
+
+div.onclick=()=>showMind(item);
+
+menu.appendChild(div);
+
+});
+
+});
+
+const dictionary = [
+
+{
+title:"You思考",
+body:"自分ではなく相手を主語に考える。"
+},
+
+{
+title:"感情ワード",
+body:"大変、不安、忙しい等。深掘りの入口。"
+},
+
+{
+title:"表のゴール",
+body:"本人が認識している目標。"
+},
+
+{
+title:"裏のゴール",
+body:"本人が言語化できていない本当の目標。"
+},
+
+{
+title:"TEFCAS",
+body:"Try→Experience→Feedback→Check→Adjust→Success"
+}
+
+];
+
+const dic =
+document.getElementById("dictionary");
+
+dictionary.forEach(item=>{
+
+const div =
+document.createElement("div");
+
+div.className="menu-item";
+
+div.innerHTML=
+"<b>"+item.title+"</b><br>"+item.body;
+
+dic.appendChild(div);
+
+});
+
 showRandom();
-
-const memo = localStorage.getItem("mindMemo");
-
-if(memo){
-document.getElementById("memo").value=memo;
-}
-}
 
 </script>
 
