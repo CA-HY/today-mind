@@ -1,0 +1,328 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>今日のマインド</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:"Yu Gothic";
+    background:#f5f7fa;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+
+    width:320px;
+    background:white;
+    border-right:1px solid #ddd;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.main{
+
+    flex:1;
+    padding:30px;
+}
+
+.search{
+
+    width:100%;
+    padding:10px;
+    font-size:16px;
+    margin-bottom:20px;
+}
+
+.menu-title{
+
+    color:#0078D4;
+    font-weight:bold;
+    margin-top:20px;
+    margin-bottom:8px;
+}
+
+.menu-item{
+
+    padding:8px;
+    cursor:pointer;
+    border-radius:6px;
+}
+
+.menu-item:hover{
+
+    background:#eef6ff;
+}
+
+.card{
+
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+.category{
+
+    color:#0078D4;
+    font-weight:bold;
+}
+
+.title{
+
+    font-size:36px;
+    margin:10px 0 20px;
+}
+
+.summary{
+
+    background:#eef6ff;
+    border-left:5px solid #0078D4;
+    padding:15px;
+    margin-bottom:20px;
+    font-weight:bold;
+}
+
+.section{
+    margin-top:6px;
+}
+
+.content{
+    white-space:pre-line;
+    line-height:0.5;
+}
+
+h3{
+
+    color:#0078D4;
+}
+
+button{
+
+    background:#0078D4;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 20px;
+    cursor:pointer;
+}
+
+@media(max-width:768px){
+
+.container{
+
+    flex-direction:column;
+}
+
+.sidebar{
+
+    width:auto;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+
+<input
+type="text"
+id="search"
+class="search"
+placeholder="検索">
+
+<div class="menu-title">
+マインド一覧
+</div>
+
+<div id="menu"></div>
+
+<hr>
+
+<div class="menu-title">
+三留辞典
+</div>
+
+<div id="dictionary"></div>
+
+</div>
+
+<div class="main">
+
+<div class="card">
+
+<div id="category"></div>
+
+<div id="title" class="title"></div>
+
+<div id="summary" class="summary"></div>
+
+<div class="section">
+<h3>なぜ重要なのか</h3>
+<div id="detail"></div>
+</div>
+
+<div class="section">
+<h3>三留メモ</h3>
+<div id="mind"></div>
+</div>
+
+<div class="section">
+<h3>今日の実践</h3>
+<div id="action"></div>
+</div>
+
+<br>
+
+<button onclick="showRandom()">
+ランダム表示
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="mind-data.js"></script>
+
+<script>
+
+function showMind(item){
+
+document.getElementById("category").innerText=item.category;
+document.getElementById("title").innerText=item.title;
+document.getElementById("summary").innerText=item.summary;
+document.getElementById("detail").innerText=item.detail;
+document.getElementById("mind").innerText=item.mind;
+document.getElementById("action").innerText=item.action;
+
+}
+
+function showRandom(){
+
+const item =
+minds[Math.floor(Math.random()*minds.length)];
+
+showMind(item);
+
+}
+
+const menu = document.getElementById("menu");
+
+minds.forEach(item=>{
+
+const div = document.createElement("div");
+
+div.className="menu-item";
+div.innerText=item.title;
+
+div.onclick=()=>showMind(item);
+
+menu.appendChild(div);
+
+});
+
+document
+.getElementById("search")
+.addEventListener("input",e=>{
+
+const keyword =
+e.target.value.toLowerCase();
+
+menu.innerHTML="";
+
+minds
+.filter(m=>
+
+m.title.toLowerCase().includes(keyword)
+||
+m.summary.toLowerCase().includes(keyword)
+||
+m.detail.toLowerCase().includes(keyword)
+
+)
+.forEach(item=>{
+
+const div =
+document.createElement("div");
+
+div.className="menu-item";
+
+div.innerText=item.title;
+
+div.onclick=()=>showMind(item);
+
+menu.appendChild(div);
+
+});
+
+});
+
+const dictionary = [
+
+{
+title:"You思考",
+body:"自分ではなく相手を主語に考える。"
+},
+
+{
+title:"感情ワード",
+body:"大変、不安、忙しい等。深掘りの入口。"
+},
+
+{
+title:"表のゴール",
+body:"本人が認識している目標。"
+},
+
+{
+title:"裏のゴール",
+body:"本人が言語化できていない本当の目標。"
+},
+
+{
+title:"TEFCAS",
+body:"Try→Experience→Feedback→Check→Adjust→Success"
+}
+
+];
+
+const dic =
+document.getElementById("dictionary");
+
+dictionary.forEach(item=>{
+
+const div =
+document.createElement("div");
+
+div.className="menu-item";
+
+div.innerHTML=
+"<b>"+item.title+"</b><br>"+item.body;
+
+dic.appendChild(div);
+
+});
+
+showRandom();
+
+</script>
+
+</body>
+</html>
